@@ -222,14 +222,40 @@ public class DBHelper extends SQLiteOpenHelper {
         return priorities;
     }
 
+    //Get categoryId from categoryName
+    public int getCategoryId(String categoryName) {
+        SQLiteDatabase db = getReadableDatabase();
+
+        String query = "SELECT categoryId FROM category WHERE categoryName = " +categoryName + ";";
+
+        Cursor c = db.rawQuery(query, null);
+
+        return c.getInt(c.getColumnIndex(DBHelper.COLUMN_CATEGORY_ID));
+    }
+
+    //Get priorityId from priorityName
+    public int getPriorityId(String priorityName) {
+        SQLiteDatabase db = getReadableDatabase();
+
+        String query = "SELECT priorityId FROM priority WHERE priorityName = " + priorityName + ";";
+
+        Cursor c = db.rawQuery(query, null);
+
+        return c.getInt(c.getColumnIndex(DBHelper.COLUMN_PRIORITY_ID));
+    }
+
     public void addTask(Task task) {
         //Casta tasks variabler?
-        //insert into
-        //koppla för att få fram categoryId och prioriyId?
         SQLiteDatabase db = getWritableDatabase();
 
-        // Hur få fram categoryId och priorityId
-        //   String query = "INSERT INTO task (taskTitle, taskDescription, taskDeadline, "
+        int categoryId = getCategoryId(task.getCategory());
+        int priorityId = getPriorityId(task.getPriority());
+
+        String query = "INSERT INTO task (taskTitle, taskDescription, taskDeadline, taskPriorityId, taskCategoryId) "
+                        +"VALUES (" + task.getTitle() + ", " + task.getDescription() + ", " + task.getDeadline() +
+                        ", " + priorityId + ", " + categoryId +");";
+
+        db.execSQL(query);
     }
 
     public void deleteTask(int taskId) {
