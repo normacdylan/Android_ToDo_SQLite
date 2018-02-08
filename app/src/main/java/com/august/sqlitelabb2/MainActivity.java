@@ -10,8 +10,8 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     private DBHelper dbHelper;
-    private ArrayAdapter adapter;
-    private List tasks;
+    private ArrayAdapter <String> adapter;
+    private List taskTitles;
     private ListView listView;
 
 
@@ -21,8 +21,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         listView = findViewById(R.id.listView);
         dbHelper = new DBHelper(this);
-     //   tasks =
-     //   adapter = new ArrayAdapter();
+        taskTitles = dbHelper.getAllTaskTitles();
+        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, taskTitles);
+        listView.setAdapter(adapter);
     }
 
 

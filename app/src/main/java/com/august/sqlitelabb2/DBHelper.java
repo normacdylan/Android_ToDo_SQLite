@@ -20,7 +20,6 @@ public class DBHelper extends SQLiteOpenHelper {
 
     //autoincrement?
 
-
     // Priority table
     public static final String TABLE_PRIORITY = "priority";
     public static final String COLUMN_PRIORITY_ID = "priorityId";
@@ -59,11 +58,9 @@ public class DBHelper extends SQLiteOpenHelper {
                     ")";
 
 
-
     public DBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
-
 
     @Override
     public void onCreate(SQLiteDatabase db) {
@@ -86,7 +83,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
         String  query = "SELECT * FROM task "+
                 "JOIN category ON task.categoryId = category.Id "+
-                "JOIN priority ON task.priorityId = priority.Id";
+                "JOIN priority ON task.priorityId = priority.Id;";
 
         Cursor c = db.rawQuery(query, null);
 
@@ -103,6 +100,24 @@ public class DBHelper extends SQLiteOpenHelper {
             }
         }
         return tasks;
+    }
+
+    //get all taskTitles in database
+    public List<String> getAllTaskTitles() {
+        List<String> titles = new ArrayList<>();
+        SQLiteDatabase db = getReadableDatabase();
+
+        String  query = "SELECT taskTitle FROM task;";
+
+        Cursor c = db.rawQuery(query, null);
+
+        if(c.getCount() > 0){
+            while(c.moveToNext()){
+                String title = c.getString(c.getColumnIndex(DBHelper.COLUMN_TASK_TITLE));
+                titles.add(title);
+            }
+        }
+        return titles;
     }
 
     //Get all tasks belonging to specified priority group
