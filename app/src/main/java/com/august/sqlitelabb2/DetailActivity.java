@@ -11,7 +11,6 @@ public class DetailActivity extends AppCompatActivity {
 
     private DBHelper dbHelper;
     private TextView infoText;
-    private CalendarView calendarView;
     private Button finishButton;
     private Task task;
     private int currentTaskId;
@@ -22,10 +21,9 @@ public class DetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_detail);
         dbHelper = new DBHelper(this);
         infoText = (TextView)findViewById(R.id.infoText);
-        calendarView = (CalendarView)findViewById(R.id.calendarView);
         finishButton = (Button)findViewById(R.id.finishButton);
         currentTaskId = getIntent().getIntExtra("currentId", 1);
-     //   task = dbHelper.getTask(currentTaskId);
+        task = dbHelper.getTask(currentTaskId);
         setupViews();
     }
 
