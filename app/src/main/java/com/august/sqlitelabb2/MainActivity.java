@@ -1,7 +1,10 @@
 package com.august.sqlitelabb2;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -14,6 +17,7 @@ public class MainActivity extends AppCompatActivity {
     private ArrayAdapter <String> adapter;
     private List<String> taskTitles;
     private ListView listView;
+    private List<Task> tasks;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,8 +27,18 @@ public class MainActivity extends AppCompatActivity {
         dbHelper = new DBHelper(this);
         taskTitles = new ArrayList<String>();
         taskTitles = dbHelper.getAllTaskTitles();
+        tasks = new ArrayList<Task>();
+        tasks = dbHelper.getAllTasks();
         adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, taskTitles);
         listView.setAdapter(adapter);
+        final Intent detailIntent = new Intent(this, DetailActivity.class);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                detailIntent.putExtra("currentId", tasks.get(position).getId());
+                startActivity(detailIntent);
+            }
+        });
     }
 
 
