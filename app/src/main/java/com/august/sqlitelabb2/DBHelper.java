@@ -18,7 +18,7 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "todo.db";
     private static final int DATABASE_VERSION = 1;
 
-    //autoincrement?
+    //autoincrement? använda rowid istället?
 
     // Priority table
     public static final String TABLE_PRIORITY = "priority";
@@ -27,8 +27,8 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String TABLE_PRIORITY_CREATE =
             "CREATE TABLE " + TABLE_PRIORITY + " (" +
                     COLUMN_PRIORITY_ID + " INTEGER PRIMARY KEY, " +
-                    COLUMN_PRIORITY_NAME + " TEXT, " +
-                    ")";
+                    COLUMN_PRIORITY_NAME + " TEXT" +
+                    ");";
 
     // Category table
     public static final String TABLE_CATEGORY = "category";
@@ -37,8 +37,8 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String TABLE_CATEGORY_CREATE =
             "CREATE TABLE " + TABLE_CATEGORY + " (" +
                     COLUMN_CATEGORY_ID + " INTEGER PRIMARY KEY, " +
-                    COLUMN_CATEGORY_NAME + " TEXT, " +
-                    ")";
+                    COLUMN_CATEGORY_NAME + " TEXT" +
+                    ");";
 
     // Task table
     public static final String TABLE_TASK = "task";
@@ -46,6 +46,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String COLUMN_TASK_TITLE = "taskTitle";
     public static final String COLUMN_TASK_DESCRIPTION = "taskDescription";
     public static final String COLUMN_TASK_DEADLINE = "taskDeadline";
+    public static final String COLUMN_TASK_DONE = "taskDone";
     public static final String COLUMN_TASK_PRIORITY_ID = "taskPriorityId";
     public static final String COLUMN_TASK_CATEGORY_ID = "taskCategoryId";
     private static final String TABLE_TASK_CREATE =
@@ -54,8 +55,10 @@ public class DBHelper extends SQLiteOpenHelper {
                     COLUMN_TASK_TITLE + " TEXT, " +
                     COLUMN_TASK_DESCRIPTION + " TEXT, " +
                     COLUMN_TASK_DEADLINE + " TEXT, " +
+                    COLUMN_TASK_DONE + " INT" +
                     COLUMN_TASK_PRIORITY_ID + " INT" +
-                    ")";
+                    COLUMN_TASK_CATEGORY_ID + " INT" +
+                    ");";
 
 
     public DBHelper(Context context) {
@@ -67,13 +70,17 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL(TABLE_PRIORITY_CREATE);
         db.execSQL(TABLE_CATEGORY_CREATE);
         db.execSQL(TABLE_TASK_CREATE);
+
+        Task task = new Task("Clean", "180413", "The house", "Boring", "Low");
+        addTask(task);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-    /*    db.execSQL("DROP TABLE IF EXISTS " + TABLE_TASK_CREATE);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_CATEGORY_CREATE);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_PRIORITY_CREATE); */
+        String drop = "DROP TABLE IF EXISTS ";
+        db.execSQL(drop + TABLE_TASK_CREATE + ";");
+        db.execSQL(drop + TABLE_CATEGORY_CREATE + ";");
+        db.execSQL(drop + TABLE_PRIORITY_CREATE + ";");
     }
 
     //get all tasks in database
@@ -94,6 +101,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 task.setTitle(c.getString(c.getColumnIndex(DBHelper.COLUMN_TASK_TITLE)));
                 task.setDescription(c.getString(c.getColumnIndex(DBHelper.COLUMN_TASK_DESCRIPTION)));
                 task.setDeadline(c.getString(c.getColumnIndex(DBHelper.COLUMN_TASK_DEADLINE)));
+                task.setDone(c.getInt(c.getColumnIndex(DBHelper.COLUMN_TASK_DONE))==1);
                 task.setCategory(c.getString(c.getColumnIndex(DBHelper.COLUMN_CATEGORY_NAME)));
                 task.setPriority(c.getString(c.getColumnIndex(DBHelper.COLUMN_PRIORITY_NAME)));
                 tasks.add(task);
@@ -101,6 +109,9 @@ public class DBHelper extends SQLiteOpenHelper {
         }
         return tasks;
     }
+
+    //TODO getOneTask(int id)
+    //TODO endast hämta titlar från alla andra metoder?
 
     //get all taskTitles in database
     public List<String> getAllTaskTitles() {
@@ -139,6 +150,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 task.setTitle(c.getString(c.getColumnIndex(DBHelper.COLUMN_TASK_TITLE)));
                 task.setDescription(c.getString(c.getColumnIndex(DBHelper.COLUMN_TASK_DESCRIPTION)));
                 task.setDeadline(c.getString(c.getColumnIndex(DBHelper.COLUMN_TASK_DEADLINE)));
+                task.setDone(c.getInt(c.getColumnIndex(DBHelper.COLUMN_TASK_DONE))==1);
                 task.setCategory(c.getString(c.getColumnIndex(DBHelper.COLUMN_CATEGORY_NAME)));
                 task.setPriority(c.getString(c.getColumnIndex(DBHelper.COLUMN_PRIORITY_NAME)));
                 tasks.add(task);
@@ -166,6 +178,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 task.setTitle(c.getString(c.getColumnIndex(DBHelper.COLUMN_TASK_TITLE)));
                 task.setDescription(c.getString(c.getColumnIndex(DBHelper.COLUMN_TASK_DESCRIPTION)));
                 task.setDeadline(c.getString(c.getColumnIndex(DBHelper.COLUMN_TASK_DEADLINE)));
+                task.setDone(c.getInt(c.getColumnIndex(DBHelper.COLUMN_TASK_DONE))==1);
                 task.setCategory(c.getString(c.getColumnIndex(DBHelper.COLUMN_CATEGORY_NAME)));
                 task.setPriority(c.getString(c.getColumnIndex(DBHelper.COLUMN_PRIORITY_NAME)));
                 tasks.add(task);
@@ -193,6 +206,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 task.setTitle(c.getString(c.getColumnIndex(DBHelper.COLUMN_TASK_TITLE)));
                 task.setDescription(c.getString(c.getColumnIndex(DBHelper.COLUMN_TASK_DESCRIPTION)));
                 task.setDeadline(c.getString(c.getColumnIndex(DBHelper.COLUMN_TASK_DEADLINE)));
+                task.setDone(c.getInt(c.getColumnIndex(DBHelper.COLUMN_TASK_DONE))==1);
                 task.setCategory(c.getString(c.getColumnIndex(DBHelper.COLUMN_CATEGORY_NAME)));
                 task.setPriority(c.getString(c.getColumnIndex(DBHelper.COLUMN_PRIORITY_NAME)));
                 tasks.add(task);
@@ -259,24 +273,34 @@ public class DBHelper extends SQLiteOpenHelper {
         return c.getInt(c.getColumnIndex(DBHelper.COLUMN_PRIORITY_ID));
     }
 
+    //Add new task
     public void addTask(Task task) {
-        //Casta tasks variabler?
         SQLiteDatabase db = getWritableDatabase();
 
         int categoryId = getCategoryId(task.getCategory());
         int priorityId = getPriorityId(task.getPriority());
 
-        String query = "INSERT INTO task (taskTitle, taskDescription, taskDeadline, taskPriorityId, taskCategoryId) "
-                        +"VALUES (" + task.getTitle() + ", " + task.getDescription() + ", " + task.getDeadline() +
+        String query = "INSERT INTO task (taskTitle, taskDescription, taskDeadline, taskDone, taskPriorityId, taskCategoryId) "
+                        +"VALUES (" + task.getTitle() + ", " + task.getDescription() + ", " + task.getDeadline() + ", 0" +
                         ", " + priorityId + ", " + categoryId +");";
 
         db.execSQL(query);
     }
 
+    //Delete task
     public void deleteTask(int taskId) {
         SQLiteDatabase db = getWritableDatabase();
 
         String query = "DELETE FROM task WHERE taskId = " +taskId +";";
+        db.execSQL(query);
+    }
+
+    //Finish task
+    public void finishTask(int taskId) {
+        SQLiteDatabase db = getWritableDatabase();
+
+        String query = "UPDATE task SET taskDone = 1 WHERE taskId = " + taskId + ";";
+
         db.execSQL(query);
     }
 

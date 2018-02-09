@@ -14,6 +14,8 @@ public class Task {
     private String category;
     private String priority;
 
+
+
     public Task() {}
 
     public Task(String title, String deadline, String description, String category, String priority) {
@@ -23,10 +25,6 @@ public class Task {
         this.description = description;
         this.category = category;
         this.priority = priority;
-    }
-
-    public void finishTask() {
-        done = true;
     }
 
     public void setId(int id) {
@@ -44,6 +42,9 @@ public class Task {
     }
     public Boolean getDone() {
         return done;
+    }
+    public void setDone(Boolean done) {
+        this.done = done;
     }
     public String getDescription() {
         return description;

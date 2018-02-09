@@ -5,15 +5,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     private DBHelper dbHelper;
     private ArrayAdapter <String> adapter;
-    private List taskTitles;
+    private List<String> taskTitles;
     private ListView listView;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         listView = findViewById(R.id.listView);
         dbHelper = new DBHelper(this);
+        taskTitles = new ArrayList<String>();
         taskTitles = dbHelper.getAllTaskTitles();
         adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, taskTitles);
         listView.setAdapter(adapter);
