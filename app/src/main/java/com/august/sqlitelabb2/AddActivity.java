@@ -33,16 +33,24 @@ public class AddActivity extends AppCompatActivity {
     public void addTask(View v) {
         Task task = new Task(
                 titleEdit.getText().toString(),
-                datePicker.toString(),
+                getDateFromPicker(),
                 descriptionEdit.getText().toString(),
-                "Category",
-                "Priority");
+                "'Work'",
+                "'Low Priority'");
 
         dbHelper.addTask(task);
 
         Intent addedIntent = new Intent(this, MainActivity.class);
         addedIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(addedIntent);
+    }
+
+    private String getDateFromPicker() {
+        int year = datePicker.getYear();
+        int month = datePicker.getMonth();
+        int day = datePicker.getDayOfMonth();
+        String date = ""+year+"/"+month+"/"+day;
+        return date;
     }
 
 }
