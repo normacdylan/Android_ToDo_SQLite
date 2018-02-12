@@ -48,36 +48,9 @@ public class MainActivity extends AppCompatActivity {
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-            /*    switch (position) {
-                    case 0:
-                        tasks = dbHelper.getAllTasks();
-                        break;
-                    case 1:
-                        tasks = dbHelper.getPriorityTasks("'Low Priority'");
-                        break;
-                    case 2:
-                        tasks = dbHelper.getPriorityTasks("'Medium Priority'");
-                        break;
-                    case 3:
-                        tasks = dbHelper.getPriorityTasks("'High Priority'");
-                        break;
-                    case 4:
-                        tasks = dbHelper.getCategoryTasks("'Work'");
-                        break;
-                    case 5:
-                        tasks = dbHelper.getCategoryTasks("'School'");
-                        break;
-                    case 6:
-                        tasks = dbHelper.getCategoryTasks("'Home'");
-                        break;
-                    default:
-                        tasks = dbHelper.getAllTasks();
-                }
-                updateListView(); */
-
-                if (position==0)
+                if (position == 0)
                     tasks = dbHelper.getAllTasks();
-                else if (position >0 && position < priorities.size()+1)
+                else if (position > 0 && position < priorities.size()+1)
                     tasks = dbHelper.getPriorityTasks("'" + priorities.get(position-1) + "'");
                 else if (position > priorities.size()+1 && position < priorities.size() + categories.size()+1)
                     tasks = dbHelper.getCategoryTasks("'" + categories.get(position-1-priorities.size()) + "'");
@@ -116,16 +89,6 @@ public class MainActivity extends AppCompatActivity {
             choices.add(prio);
         for (String categ : categories)
             choices.add(categ);
-
-
-     /*   choices.add("Show Low Priority Tasks");
-        choices.add("Show Medium Priority Tasks");
-        choices.add("Show High Priority Tasks");
-        choices.add("Show Work Tasks");
-        choices.add("Show School Tasks");
-        choices.add("Show Home Tasks"); */
-
-
 
         ArrayAdapter<String> choicesAdapter = new ArrayAdapter<>
                 (this, android.R.layout.simple_spinner_item, choices);

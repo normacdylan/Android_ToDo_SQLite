@@ -117,6 +117,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 tasks.add(task);
             }
         }
+        Log.i(LOGTAG, "All tasks fetched");
         return tasks;
     }
 
@@ -143,6 +144,7 @@ public class DBHelper extends SQLiteOpenHelper {
             task.setCategory(c.getString(c.getColumnIndex(DBHelper.COLUMN_CATEGORY_NAME)));
             task.setPriority(c.getString(c.getColumnIndex(DBHelper.COLUMN_PRIORITY_NAME)));
         }
+        Log.i(LOGTAG, "Task with id "+taskId+" fetched");
         return task;
     }
 
@@ -172,6 +174,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 tasks.add(task);
             }
         }
+        Log.i(LOGTAG, "All tasks with priority " + priority + "fetched");
         return tasks;
     }
 
@@ -201,34 +204,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 tasks.add(task);
             }
         }
-        return tasks;
-    }
-
-    //Get all tasks sorted according to specified column and order
-    public List<Task> getAllTasksSorted(String column, String order) {
-        List<Task> tasks = new ArrayList<>();
-        SQLiteDatabase db = getReadableDatabase();
-
-        String  query = "SELECT * FROM task "+
-                "JOIN category ON task.categoryId = category.Id "+
-                "JOIN priority ON task.priorityId = priority.Id "+
-                "ORDER BY " + column +" "+ order +";";
-
-        Cursor c = db.rawQuery(query, null);
-
-        if(c.getCount() > 0){
-            while(c.moveToNext()){
-                Task task = new Task();
-                task.setId(c.getInt(c.getColumnIndex(DBHelper.COLUMN_TASK_ID)));
-                task.setTitle(c.getString(c.getColumnIndex(DBHelper.COLUMN_TASK_TITLE)));
-                task.setDescription(c.getString(c.getColumnIndex(DBHelper.COLUMN_TASK_DESCRIPTION)));
-                task.setDeadline(c.getString(c.getColumnIndex(DBHelper.COLUMN_TASK_DEADLINE)));
-                task.setDone(c.getInt(c.getColumnIndex(DBHelper.COLUMN_TASK_DONE))==1);
-                task.setCategory(c.getString(c.getColumnIndex(DBHelper.COLUMN_CATEGORY_NAME)));
-                task.setPriority(c.getString(c.getColumnIndex(DBHelper.COLUMN_PRIORITY_NAME)));
-                tasks.add(task);
-            }
-        }
+        Log.i(LOGTAG, "All tasks with category " + category + "fetched");
         return tasks;
     }
 
@@ -247,6 +223,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 categories.add(category);
             }
         }
+        Log.i(LOGTAG, "All categories fetched");
         return categories;
     }
 
@@ -265,6 +242,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 priorities.add(priority);
             }
         }
+        Log.i(LOGTAG, "All priorities fetched");
         return priorities;
     }
 
@@ -281,6 +259,7 @@ public class DBHelper extends SQLiteOpenHelper {
         while (c.moveToNext()) {
             categoryId = c.getInt(c.getColumnIndex(DBHelper.COLUMN_CATEGORY_ID));
         }
+        Log.i(LOGTAG, "CategoryId for  "+categoryName+"fetched");
         return categoryId;
     }
 
@@ -297,7 +276,7 @@ public class DBHelper extends SQLiteOpenHelper {
         while (c.moveToNext()) {
             priorityId = c.getInt(c.getColumnIndex(DBHelper.COLUMN_PRIORITY_ID));
         }
-
+        Log.i(LOGTAG, "PriorityId for  "+priorityName+"fetched");
         return priorityId;
     }
 
@@ -313,6 +292,7 @@ public class DBHelper extends SQLiteOpenHelper {
                         ", " + priorityId + ", " + categoryId +");";
 
         db.execSQL(query);
+        Log.i(LOGTAG, "Task added");
     }
 
     //Delete task
@@ -321,6 +301,8 @@ public class DBHelper extends SQLiteOpenHelper {
 
         String query = "DELETE FROM task WHERE taskId = " +taskId +";";
         db.execSQL(query);
+        Log.i(LOGTAG, "Task deleted");
+
     }
 
     //Finish task
@@ -330,6 +312,8 @@ public class DBHelper extends SQLiteOpenHelper {
         String query = "UPDATE task SET taskDone = 1 WHERE taskId = " + taskId + ";";
 
         db.execSQL(query);
+        Log.i(LOGTAG, "Task with id "+taskId+" set to done");
+
     }
 
 }
