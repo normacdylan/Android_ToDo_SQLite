@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 
 import java.util.List;
+import java.util.Calendar;
 
 public class AddActivity extends AppCompatActivity {
 
@@ -35,6 +36,7 @@ public class AddActivity extends AppCompatActivity {
         categorySpinner = (Spinner)findViewById(R.id.categorySpinner);
         prioritySpinner = (Spinner)findViewById(R.id.prioritySpinner);
         setupSpinners();
+        setupDatePicker();
     }
 
     public void addTask(View v) {
@@ -65,6 +67,13 @@ public class AddActivity extends AppCompatActivity {
                 (this, android.R.layout.simple_spinner_item, priorities);
         prioritiesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         prioritySpinner.setAdapter(prioritiesAdapter);
+    }
+
+    private void setupDatePicker() {
+        int year = Calendar.getInstance().get(Calendar.YEAR);
+        int month = Calendar.getInstance().get(Calendar.MONTH)+1;
+        int day = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
+        datePicker.updateDate(year, month, day);
     }
 
     private String getDateFromPicker() {

@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Spinner;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,22 +17,21 @@ public class MainActivity extends AppCompatActivity {
 
     private DBHelper dbHelper;
     private ArrayAdapter <String> adapter;
-    private List<String> taskTitles;
     private ListView listView;
     private List<Task> tasks;
+    private Spinner spinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         listView = findViewById(R.id.listView);
+        spinner = (Spinner)findViewById(R.id.spinner);
+        setupSpinner();
         dbHelper = new DBHelper(this);
-        taskTitles = new ArrayList<String>();
-        taskTitles = dbHelper.getAllTaskTitles();
-        tasks = new ArrayList<Task>();
         tasks = dbHelper.getAllTasks();
-        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, taskTitles);
-        listView.setAdapter(adapter);
+        updateListView();
+
         final Intent detailIntent = new Intent(this, DetailActivity.class);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -41,15 +41,53 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(detailIntent);
             }
         });
+
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                switch (position) {
+                    case 0:
+                        tasks = dbHelper.getAllTasks();
+                        break;
+                    case 1:
+                        tasks = dbHelper.getPriorityTasks("'Low Priority'");
+                        break;
+                    case 2:
+                        tasks = dbHelper.getPriorityTasks("'Medium Priority'");
+                        break;
+                    case 3:
+                        tasks = dbHelper.getPriorityTasks("'High Priority'");
+                        break;
+                    case 4:
+                        tasks = dbHelper.getCategoryTasks("'Work'");
+                        break;
+                    case 5:
+                        tasks = dbHelper.getCategoryTasks("'School'");
+                        break;
+                    case 6:
+                        tasks = dbHelper.getCategoryTasks("'Home'");
+                        break;
+                    default:
+                        tasks = dbHelper.getAllTasks();
+                }
+                updateListView();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+                tasks = dbHelper.getAllTasks();
+                updateListView();
+            }
+
+        });
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        taskTitles = dbHelper.getAllTaskTitles();
         tasks = dbHelper.getAllTasks();
-        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, taskTitles);
-        listView.setAdapter(adapter);
+        updateListView();
+        spinner.setSelection(0);
     }
 
     public void addTask(View v) {
@@ -58,6 +96,33 @@ public class MainActivity extends AppCompatActivity {
         startActivity(addIntent);
     }
 
+    private void setupSpinner() {
+        List<String> choices = new ArrayList<>();
+        choices.add("Show All Tasks");
+        choices.add("Show Low Priority Tasks");
+        choices.add("Show Medium Priority Tasks");
+        choices.add("Show High Priority Tasks");
+        choices.add("Show Work Tasks");
+        choices.add("Show School Tasks");
+        choices.add("Show Home Tasks");
 
+        ArrayAdapter<String> choicesAdapter = new ArrayAdapter<String>
+                (this, android.R.layout.simple_spinner_item, choices);
+        choicesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(choicesAdapter);
+        spinner.setSelection(0);
+    }
+
+    private List<String> getTaskTitles() {
+        List<String> taskTitles = new ArrayList<>();
+        for (Task task : tasks)
+            taskTitles.add(task.getTitle());
+        return taskTitles;
+    }
+
+    private void updateListView() {
+        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, getTaskTitles());
+        listView.setAdapter(adapter);
+    }
 
 }

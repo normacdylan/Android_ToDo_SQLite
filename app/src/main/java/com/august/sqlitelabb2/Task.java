@@ -14,9 +14,6 @@ public class Task {
     private String category;
     private String priority;
 
-
-
-
     public Task() {}
 
     public Task(String title, String deadline, String description, String category, String priority) {

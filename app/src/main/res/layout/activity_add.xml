@@ -22,26 +22,32 @@
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:ems="10"
-        android:inputType="textPersonName" />
+        android:hint="What to do?"
+        android:inputType="textCapWords"
+        android:singleLine="true" />
 
     <EditText
         android:id="@+id/descriptionEdit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:ems="10" />
+        android:ems="10"
+        android:hint="Further description"
+        android:inputType="textCapWords"
+        android:imeOptions="actionDone"
+        android:singleLine="true" />
 
     <DatePicker
         android:id="@+id/datePicker"
-        android:layout_width="181dp"
-        android:layout_height="120dp"
+        android:layout_width="318dp"
+        android:layout_height="109dp"
         android:layout_gravity="center"
         android:layout_margin="16dp" />
 
     <Button
         android:id="@+id/addButton"
-        android:layout_width="121dp"
-        android:layout_height="37dp"
+        android:layout_width="127dp"
+        android:layout_height="58dp"
         android:layout_gravity="center"
         android:layout_marginBottom="36dp"
         android:onClick="addTask"

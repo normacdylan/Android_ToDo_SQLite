@@ -1,7 +1,9 @@
 package com.august.sqlitelabb2;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CalendarView;
@@ -12,6 +14,7 @@ public class DetailActivity extends AppCompatActivity {
     private DBHelper dbHelper;
     private TextView infoText;
     private Button finishButton;
+    private Button deleteButton;
     private Task task;
     private int currentTaskId;
 
@@ -22,16 +25,19 @@ public class DetailActivity extends AppCompatActivity {
         dbHelper = new DBHelper(this);
         infoText = (TextView)findViewById(R.id.infoText);
         finishButton = (Button)findViewById(R.id.finishButton);
-        currentTaskId = getIntent().getIntExtra("currentId", 1);
+        deleteButton = (Button)findViewById(R.id.deleteButton);
+        currentTaskId = getIntent().getIntExtra("currentId", 0);
         task = dbHelper.getTask(currentTaskId);
         setupViews();
     }
 
     private void setupViews() {
-        //ta med avklarad i info?
-        String info = task.getTitle() + "(Priority: " + task.getPriority() +")" + '\n'
+        String done = task.getDone()? "Already finished" : "Not yet finished";
+
+        String info = task.getTitle() + " ("+task.getPriority() +")" + '\n'
                 + task.getDescription() + '\n' + "Category: " +
-                task.getCategory() +'\n' + "Deadline: " + task.getDeadline();
+                task.getCategory() +'\n' + "Deadline: " + task.getDeadline() +
+                '\n' + done;
 
         infoText.setText(info);
 
@@ -45,6 +51,13 @@ public class DetailActivity extends AppCompatActivity {
         dbHelper.finishTask(currentTaskId);
         task = dbHelper.getTask(currentTaskId);
         setupViews();
+    }
+
+    public void deleteTask(View v) {
+        dbHelper.deleteTask(currentTaskId);
+        Intent mainIntent = new Intent(this, MainActivity.class);
+        mainIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(mainIntent);
     }
 
 }

@@ -71,7 +71,7 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL(TABLE_CATEGORY_CREATE);
         db.execSQL(TABLE_TASK_CREATE);
 
-        Log.i(LOGTAG, "tables created");
+        Log.i(LOGTAG, "Tables created");
 
         String addCategories = "INSERT INTO category (categoryName) VALUES ('Work'),('School'),('Home');";
         String addPriorities = "INSERT INTO priority (priorityName) VALUES ('Low Priority'),('Medium Priority'),('High Priority');";
@@ -87,21 +87,20 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL(drop + TABLE_CATEGORY + ";");
         db.execSQL(drop + TABLE_PRIORITY + ";");
 
-        Log.i(LOGTAG, "tables dropped");
+        Log.i(LOGTAG, "Tables dropped");
 
         onCreate(db);
     }
 
-    //get all tasks in database
+    //Get all tasks in database
     public List<Task> getAllTasks() {
         List<Task> tasks = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
 
-     /*   String  query = "SELECT * FROM task "+
-                "JOIN category ON category.Id = task.taskCategoryId "+
-                "JOIN priority ON priority.Id = task.taskPriorityId;"; */
-
-        String  query = "SELECT * FROM task;";
+        String  query = "SELECT taskId, taskTitle, taskDescription, taskDeadline," +
+                " taskDone, category.categoryName, priority.priorityName FROM task "+
+                "INNER JOIN category ON category.categoryId = task.taskCategoryId "+
+                "INNER JOIN priority ON priority.priorityId = task.taskPriorityId;";
 
         Cursor c = db.rawQuery(query, null);
 
@@ -113,18 +112,23 @@ public class DBHelper extends SQLiteOpenHelper {
                 task.setDescription(c.getString(c.getColumnIndex(DBHelper.COLUMN_TASK_DESCRIPTION)));
                 task.setDeadline(c.getString(c.getColumnIndex(DBHelper.COLUMN_TASK_DEADLINE)));
                 task.setDone(c.getInt(c.getColumnIndex(DBHelper.COLUMN_TASK_DONE))==1);
-            //    task.setCategory(c.getString(c.getColumnIndex(DBHelper.COLUMN_CATEGORY_NAME)));
-            //    task.setPriority(c.getString(c.getColumnIndex(DBHelper.COLUMN_PRIORITY_NAME)));
+                task.setCategory(c.getString(c.getColumnIndex(DBHelper.COLUMN_CATEGORY_NAME)));
+                task.setPriority(c.getString(c.getColumnIndex(DBHelper.COLUMN_PRIORITY_NAME)));
                 tasks.add(task);
             }
         }
         return tasks;
     }
 
+    //Get one task
     public Task getTask(int taskId) {
         SQLiteDatabase db = getReadableDatabase();
 
-        String  query = "SELECT * FROM task WHERE taskId = " + taskId+ ";";
+        String  query = "SELECT taskId, taskTitle, taskDescription, taskDeadline," +
+                " taskDone, category.categoryName, priority.priorityName FROM task "+
+                "INNER JOIN category ON category.categoryId = task.taskCategoryId "+
+                "INNER JOIN priority ON priority.priorityId = task.taskPriorityId " +
+                "WHERE taskId = " + taskId+";";
 
         Cursor c = db.rawQuery(query, null);
 
@@ -136,28 +140,10 @@ public class DBHelper extends SQLiteOpenHelper {
             task.setDescription(c.getString(c.getColumnIndex(DBHelper.COLUMN_TASK_DESCRIPTION)));
             task.setDeadline(c.getString(c.getColumnIndex(DBHelper.COLUMN_TASK_DEADLINE)));
             task.setDone(c.getInt(c.getColumnIndex(DBHelper.COLUMN_TASK_DONE))==1);
-            //    task.setCategory(c.getString(c.getColumnIndex(DBHelper.COLUMN_CATEGORY_NAME)));
-            //    task.setPriority(c.getString(c.getColumnIndex(DBHelper.COLUMN_PRIORITY_NAME)));
+            task.setCategory(c.getString(c.getColumnIndex(DBHelper.COLUMN_CATEGORY_NAME)));
+            task.setPriority(c.getString(c.getColumnIndex(DBHelper.COLUMN_PRIORITY_NAME)));
         }
         return task;
-    }
-
-    //get all taskTitles in database
-    public List<String> getAllTaskTitles() {
-        List<String> titles = new ArrayList<>();
-        SQLiteDatabase db = getReadableDatabase();
-
-        String  query = "SELECT taskTitle FROM task;";
-
-        Cursor c = db.rawQuery(query, null);
-
-        if(c.getCount() > 0){
-            while(c.moveToNext()){
-                String title = c.getString(c.getColumnIndex(DBHelper.COLUMN_TASK_TITLE));
-                titles.add(title);
-            }
-        }
-        return titles;
     }
 
     //Get all tasks belonging to specified priority group
@@ -165,9 +151,10 @@ public class DBHelper extends SQLiteOpenHelper {
         List<Task> tasks = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
 
-        String  query = "SELECT * FROM task "+
-                "JOIN category ON task.categoryId = category.Id "+
-                "JOIN priority ON task.priorityId = priority.Id "+
+        String  query = "SELECT taskId, taskTitle, taskDescription, taskDeadline," +
+                " taskDone, category.categoryName, priority.priorityName FROM task "+
+                "JOIN category ON task.taskCategoryId = category.categoryId "+
+                "JOIN priority ON task.taskPriorityId = priority.priorityId "+
                 "WHERE priority.priorityName = " + priority +";";
 
         Cursor c = db.rawQuery(query, null);
@@ -193,9 +180,10 @@ public class DBHelper extends SQLiteOpenHelper {
         List<Task> tasks = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
 
-        String  query = "SELECT * FROM task "+
-                "JOIN category ON task.categoryId = category.Id "+
-                "JOIN priority ON task.priorityId = priority.Id "+
+        String  query = "SELECT taskId, taskTitle, taskDescription, taskDeadline," +
+                " taskDone, category.categoryName, priority.priorityName FROM task "+
+                "JOIN category ON task.taskCategoryId = category.categoryId "+
+                "JOIN priority ON task.taskPriorityId = priority.priorityId "+
                 "WHERE category.categoryName = " + category +";";
 
         Cursor c = db.rawQuery(query, null);
@@ -284,7 +272,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public int getCategoryId(String categoryName) {
         SQLiteDatabase db = getReadableDatabase();
 
-        String query = "SELECT categoryId FROM category WHERE categoryName = " +categoryName + ";";
+        String query = "SELECT categoryId FROM category WHERE categoryName = '" +categoryName + "';";
 
         Cursor c = db.rawQuery(query, null);
 
@@ -300,7 +288,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public int getPriorityId(String priorityName) {
         SQLiteDatabase db = getReadableDatabase();
 
-        String query = "SELECT priorityId FROM priority WHERE priorityName = " + priorityName + ";";
+        String query = "SELECT priorityId FROM priority WHERE priorityName = '" + priorityName + "';";
 
         Cursor c = db.rawQuery(query, null);
 
