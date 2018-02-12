@@ -28,7 +28,6 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void setupViews() {
-
         //ta med avklarad i info?
         String info = task.getTitle() + "(Priority: " + task.getPriority() +")" + '\n'
                 + task.getDescription() + '\n' + "Category: " +
@@ -44,6 +43,7 @@ public class DetailActivity extends AppCompatActivity {
 
     public void finishTask(View v) {
         dbHelper.finishTask(currentTaskId);
+        task = dbHelper.getTask(currentTaskId);
         setupViews();
     }
 

@@ -17,7 +17,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     private static final String LOGTAG = "ToDo";
     private static final String DATABASE_NAME = "todo.db";
-    private static final int DATABASE_VERSION = 9;
+    private static final int DATABASE_VERSION = 10;
 
     // Priority table
     public static final String TABLE_PRIORITY = "priority";
@@ -62,9 +62,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public DBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
-        Log.i(LOGTAG, "DBhelper created");
         getReadableDatabase();
-
     }
 
     @Override
@@ -78,15 +76,8 @@ public class DBHelper extends SQLiteOpenHelper {
         String addCategories = "INSERT INTO category (categoryName) VALUES ('Work'),('School'),('Home');";
         String addPriorities = "INSERT INTO priority (priorityName) VALUES ('Low Priority'),('Medium Priority'),('High Priority');";
 
-     //   db.execSQL(addCategories);
-     //   db.execSQL(addPriorities);
-
-        Task task = new Task("'Run'","'180502'", "'marathon'", "Work", "Low Priority");
-        String query = "INSERT INTO task (taskTitle, taskDescription, taskDeadline, taskDone, taskPriorityId, taskCategoryId) "
-                +"VALUES (" + task.getTitle() + ", " + task.getDescription() + ", " + task.getDeadline() + ", 0" +
-                ", " + 1 + ", " + 2 +");";
-        db.execSQL(query);
-
+        db.execSQL(addCategories);
+        db.execSQL(addPriorities);
     }
 
     @Override

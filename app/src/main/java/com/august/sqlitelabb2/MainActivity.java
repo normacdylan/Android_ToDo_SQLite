@@ -43,6 +43,15 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        taskTitles = dbHelper.getAllTaskTitles();
+        tasks = dbHelper.getAllTasks();
+        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, taskTitles);
+        listView.setAdapter(adapter);
+    }
+
     public void addTask(View v) {
         Intent addIntent = new Intent(this, AddActivity.class);
         addIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
