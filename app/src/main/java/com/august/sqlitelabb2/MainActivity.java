@@ -20,6 +20,7 @@ public class MainActivity extends AppCompatActivity {
     private ListView listView;
     private List<Task> tasks;
     private Spinner spinner;
+    private List<String> priorities, categories;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,9 +28,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         listView = findViewById(R.id.listView);
         spinner = (Spinner)findViewById(R.id.spinner);
-        setupSpinner();
         dbHelper = new DBHelper(this);
         tasks = dbHelper.getAllTasks();
+        priorities = dbHelper.getPriorities();
+        categories = dbHelper.getCategories();
+        setupSpinner();
         updateListView();
 
         final Intent detailIntent = new Intent(this, DetailActivity.class);
@@ -45,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                switch (position) {
+            /*    switch (position) {
                     case 0:
                         tasks = dbHelper.getAllTasks();
                         break;
@@ -70,6 +73,15 @@ public class MainActivity extends AppCompatActivity {
                     default:
                         tasks = dbHelper.getAllTasks();
                 }
+                updateListView(); */
+
+                if (position==0)
+                    tasks = dbHelper.getAllTasks();
+                else if (position >0 && position < priorities.size()+1)
+                    tasks = dbHelper.getPriorityTasks("'" + priorities.get(position-1) + "'");
+                else if (position > priorities.size()+1 && position < priorities.size() + categories.size()+1)
+                    tasks = dbHelper.getCategoryTasks("'" + categories.get(position-1-priorities.size()) + "'");
+
                 updateListView();
             }
 
@@ -98,15 +110,24 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupSpinner() {
         List<String> choices = new ArrayList<>();
+
         choices.add("Show All Tasks");
-        choices.add("Show Low Priority Tasks");
+        for (String prio : priorities)
+            choices.add(prio);
+        for (String categ : categories)
+            choices.add(categ);
+
+
+     /*   choices.add("Show Low Priority Tasks");
         choices.add("Show Medium Priority Tasks");
         choices.add("Show High Priority Tasks");
         choices.add("Show Work Tasks");
         choices.add("Show School Tasks");
-        choices.add("Show Home Tasks");
+        choices.add("Show Home Tasks"); */
 
-        ArrayAdapter<String> choicesAdapter = new ArrayAdapter<String>
+
+
+        ArrayAdapter<String> choicesAdapter = new ArrayAdapter<>
                 (this, android.R.layout.simple_spinner_item, choices);
         choicesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(choicesAdapter);
@@ -121,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateListView() {
-        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, getTaskTitles());
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, getTaskTitles());
         listView.setAdapter(adapter);
     }
 

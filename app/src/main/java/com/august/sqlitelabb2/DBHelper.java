@@ -17,7 +17,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     private static final String LOGTAG = "ToDo";
     private static final String DATABASE_NAME = "todo.db";
-    private static final int DATABASE_VERSION = 10;
+    private static final int DATABASE_VERSION = 11;
 
     // Priority table
     public static final String TABLE_PRIORITY = "priority";
@@ -73,7 +73,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
         Log.i(LOGTAG, "Tables created");
 
-        String addCategories = "INSERT INTO category (categoryName) VALUES ('Work'),('School'),('Home');";
+        String addCategories = "INSERT INTO category (categoryName) VALUES ('Work'),('School'),('Home'),('Other');";
         String addPriorities = "INSERT INTO priority (priorityName) VALUES ('Low Priority'),('Medium Priority'),('High Priority');";
 
         db.execSQL(addCategories);
